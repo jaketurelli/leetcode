@@ -27,3 +27,33 @@
 // 1. 1 step + 1 step + 1 step
 // 2. 1 step + 2 steps
 // 3. 2 steps + 1 step
+#include <cstdio>
+class Solution
+{
+public:
+    int climbStairs(int n)
+    {
+        int n_minus1 = 1;
+        int n_minus2 = 0;
+        int current_iteration = 0;
+        for (size_t i = 1; i <= n; i++)
+        {
+            current_iteration = n_minus1 + n_minus2;
+            n_minus2 = n_minus1;
+            n_minus1 = current_iteration;
+        }
+
+        return current_iteration;
+    }
+};
+
+int main(int argc, char const *argv[])
+{
+    Solution solution;
+
+    // 1 <= n <= 45
+    int n = 2;
+    int n_ways = solution.climbStairs(n);
+    printf("solution for %i: %i\n", n, n_ways);
+    return 0;
+}
