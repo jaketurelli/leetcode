@@ -9,6 +9,7 @@
 ///
 ///////////////////////////////////////////////
 #include <vector>
+#include <stack>
 using namespace std;
 
 // You are given an array of non-overlapping intervals intervals where
@@ -27,5 +28,53 @@ class Solution
 public:
     vector<vector<int>> insert(vector<vector<int>> &intervals, vector<int> &newInterval)
     {
+        int n_intervals = intervals.size();
+        int high_boundary = intervals.size();
+        int low_boundary = 0;
+
+        stack<int> low_indices;
+        stack<int> high_indices;
+
+        bool high_boundary_found = false;
+        bool low_boundary_found = false;
+        int low_index = 0;
+        int high_index = 0;
+        int int_index = 0;
+        while (!high_boundary_found && !low_boundary_found)
+        {
+            // int binary_ind = (high_boundary - low_boundary) / 2;
+            int binary_ind = int_index;
+
+            if (intervals[binary_ind][0] <= newInterval[0] && intervals[binary_ind][1] >= newInterval[0])
+            {
+                // between current interval
+                low_boundary_found = true;
+                low_index = binary_ind;
+                break;
+            }
+            else if (intervals[binary_ind][0] > newInterval[0])
+            {
+                // outside this boundary, lower
+                high_boundary = binary_ind;
+            }
+            else if (intervals[binary_ind][1] < newInterval[0])
+            {
+                low_boundary = binary_ind;
+                // outside this boundary, higher
+            }
+            int_index++;
+        }
     }
 };
+
+int main(int argc, char const *argv[])
+{
+    // Input: intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
+    // Output: [[1,2],[3,10],[12,16]]
+    Solution solution;
+    vector<vector<int>> intervals = {{1, 2}, {3, 5}, {6, 7}, {8, 10}, {12, 16}};
+    vector<int> new_interval = {4, 8};
+    vector<vector<int>> final_interval = solution.insert(intervals, new_interval);
+
+    return 0;
+}
