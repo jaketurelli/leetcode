@@ -10,6 +10,7 @@
 ///////////////////////////////////////////////
 #include <vector>
 #include <stack>
+#include <cstdio>
 using namespace std;
 
 // You are given an array of non-overlapping intervals intervals where
@@ -25,45 +26,84 @@ using namespace std;
 // Return intervals after the insertion.
 class Solution
 {
-public:
-    vector<vector<int>> insert(vector<vector<int>> &intervals, vector<int> &newInterval)
+private:
+    enum Location
     {
-        int n_intervals = intervals.size();
-        int high_boundary = intervals.size();
-        int low_boundary = 0;
+        LOCATION_OUTSIDE_BELOW,
+        LOCATION_OUTSIDE_ABOVE,
+        LOCATION_INSIDE,
+        LOCATION_NOT_FOUND
+    };
 
-        stack<int> low_indices;
-        stack<int> high_indices;
+public:
+    vector<vector<int>>
+    insert(vector<vector<int>> &intervals, vector<int> &newInterval)
+    {
+        vector<vector<int>> FinalInterval;
+        int new_indices[2] = {0};
+        Location new_index_locations[2] = {LOCATION_NOT_FOUND, LOCATION_NOT_FOUND};
 
-        bool high_boundary_found = false;
-        bool low_boundary_found = false;
-        int low_index = 0;
-        int high_index = 0;
-        int int_index = 0;
-        while (!high_boundary_found && !low_boundary_found)
+        for (int i = 0; i < 2; i++)
         {
-            // int binary_ind = (high_boundary - low_boundary) / 2;
-            int binary_ind = int_index;
-
-            if (intervals[binary_ind][0] <= newInterval[0] && intervals[binary_ind][1] >= newInterval[0])
+            int bound_low = 0;
+            int bound_high = intervals.size();
+            bool bound_found = false;
+            while (!bound_found)
             {
-                // between current interval
-                low_boundary_found = true;
-                low_index = binary_ind;
-                break;
+                int bin_ind = (bound_high - bound_low) / 2 + bound_low;
+                printf("bin_ind: %i\n", bin_ind);
+                // inside?
+                if (intervals[bin_ind][0] <= newInterval[i] && intervals[bin_ind][1] >= newInterval[i])
+                {
+                    bound_found = true;
+                    new_index_locations[i] = LOCATION_INSIDE;
+                    new_indices[i] = bin_ind;
+                    printf("bound (%i) found inside interval {%i,%i}\n", newInterval[i], intervals[bin_ind][0], intervals[bin_ind][1]);
+                }
+                else if (intervals[bin_ind][1] < newInterval[i])
+                {
+                    printf("higher\n");
+                    if (bin_ind == intervals.size() - 1 || newInterval[i] < intervals[bin_ind + 1][0])
+                    {
+                        bound_found = true;
+                        new_index_locations[i] = LOCATION_OUTSIDE_ABOVE;
+                        new_indices[i] = bin_ind;
+                        printf("bound (%i) found above interval {%i,%i}\n", newInterval[i], intervals[bin_ind][0], intervals[bin_ind][1]);
+                    }
+                    else
+                    {
+                        bound_low = bin_ind;
+                        continue;
+                    }
+                }
+                else if (intervals[bin_ind][1] > newInterval[i])
+                {
+                    printf("lower\n");
+                    if (bin_ind == 0 || newInterval[i] > intervals[bin_ind - 1][1])
+                    {
+                        bound_found = true;
+                        new_index_locations[i] = LOCATION_OUTSIDE_BELOW;
+                        new_indices[i] = bin_ind;
+                        printf("bound (%i) found below interval {%i,%i}\n", newInterval[i], intervals[bin_ind][0], intervals[bin_ind][1]);
+                    }
+                    else
+                    {
+                        bound_high = bin_ind;
+                        continue;
+                    }
+                }
             }
-            else if (intervals[binary_ind][0] > newInterval[0])
-            {
-                // outside this boundary, lower
-                high_boundary = binary_ind;
-            }
-            else if (intervals[binary_ind][1] < newInterval[0])
-            {
-                low_boundary = binary_ind;
-                // outside this boundary, higher
-            }
-            int_index++;
         }
+
+        // binary search:
+        //   1. at each index:
+        //      a. are you inside?
+        //      b. are you just above?
+        //          if no (just higher than next) - go again at higher bound
+        //      c. are you just below?
+        //          if no (just lower than previous) - go again at lower bound
+
+        return FinalInterval;
     }
 };
 
@@ -72,8 +112,13 @@ int main(int argc, char const *argv[])
     // Input: intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
     // Output: [[1,2],[3,10],[12,16]]
     Solution solution;
-    vector<vector<int>> intervals = {{1, 2}, {3, 5}, {6, 7}, {8, 10}, {12, 16}};
-    vector<int> new_interval = {4, 8};
+    vector<vector<int>> intervals = {
+        {1, 2},
+        {4, 5},
+        {6, 7},
+        {8, 10},
+        {12, 16}};
+    vector<int> new_interval = {13, 14};
     vector<vector<int>> final_interval = solution.insert(intervals, new_interval);
 
     return 0;
