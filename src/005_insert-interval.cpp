@@ -13,6 +13,10 @@
 #include <cstdio>
 using namespace std;
 
+// Completed 1/8/2022:
+// Runtime: 28 ms, faster than 23.65% of C++ online submissions for Insert Interval.
+// Memory Usage: 17.1 MB, less than 39.98% of C++ online submissions for Insert Interval.
+
 // You are given an array of non-overlapping intervals intervals where
 // intervals[i] = [starti, endi] represent the start and the end of
 // the ith interval and intervals is sorted in ascending order by starti.
@@ -40,6 +44,12 @@ public:
     insert(vector<vector<int>> &intervals, vector<int> &newInterval)
     {
         vector<vector<int>> FinalInterval;
+        if (intervals.empty())
+        {
+            FinalInterval.push_back(newInterval);
+            return FinalInterval;
+        }
+
         int new_indices[2] = {0};
         Location new_index_locations[2] = {LOCATION_NOT_FOUND, LOCATION_NOT_FOUND};
 
@@ -48,27 +58,29 @@ public:
             int bound_low = 0;
             int bound_high = intervals.size();
             bool bound_found = false;
+            // int bin_ind = 0; // non binary-search solution;
             while (!bound_found)
             {
                 int bin_ind = (bound_high - bound_low) / 2 + bound_low;
-                printf("bin_ind: %i\n", bin_ind);
+
+                // printf("bin_ind: %i\n", bin_ind);
                 // inside?
                 if (intervals[bin_ind][0] <= newInterval[i] && intervals[bin_ind][1] >= newInterval[i])
                 {
                     bound_found = true;
                     new_index_locations[i] = LOCATION_INSIDE;
                     new_indices[i] = bin_ind;
-                    printf("bound (%i) found inside interval {%i,%i}\n", newInterval[i], intervals[bin_ind][0], intervals[bin_ind][1]);
+                    // printf("bound (%i) found inside interval {%i,%i}\n", newInterval[i], intervals[bin_ind][0], intervals[bin_ind][1]);
                 }
                 else if (intervals[bin_ind][1] < newInterval[i])
                 {
-                    printf("higher\n");
+                    // printf("higher\n");
                     if (bin_ind == intervals.size() - 1 || newInterval[i] < intervals[bin_ind + 1][0])
                     {
                         bound_found = true;
                         new_index_locations[i] = LOCATION_OUTSIDE_ABOVE;
                         new_indices[i] = bin_ind;
-                        printf("bound (%i) found above interval {%i,%i}\n", newInterval[i], intervals[bin_ind][0], intervals[bin_ind][1]);
+                        // printf("bound (%i) found above interval {%i,%i}\n", newInterval[i], intervals[bin_ind][0], intervals[bin_ind][1]);
                     }
                     else
                     {
@@ -78,13 +90,13 @@ public:
                 }
                 else if (intervals[bin_ind][1] > newInterval[i])
                 {
-                    printf("lower\n");
+                    // printf("lower\n");
                     if (bin_ind == 0 || newInterval[i] > intervals[bin_ind - 1][1])
                     {
                         bound_found = true;
                         new_index_locations[i] = LOCATION_OUTSIDE_BELOW;
                         new_indices[i] = bin_ind;
-                        printf("bound (%i) found below interval {%i,%i}\n", newInterval[i], intervals[bin_ind][0], intervals[bin_ind][1]);
+                        // printf("bound (%i) found below interval {%i,%i}\n", newInterval[i], intervals[bin_ind][0], intervals[bin_ind][1]);
                     }
                     else
                     {
@@ -92,16 +104,65 @@ public:
                         continue;
                     }
                 }
+                // bin_ind++; // non binary-search solution;
             }
         }
 
-        // binary search:
-        //   1. at each index:
-        //      a. are you inside?
-        //      b. are you just above?
-        //          if no (just higher than next) - go again at higher bound
-        //      c. are you just below?
-        //          if no (just lower than previous) - go again at lower bound
+        bool open_interval = false;
+        vector<int> additional_interval;
+        for (size_t i = 0; i < intervals.size(); i++)
+        {
+
+            if (i == new_indices[0])
+            {
+                open_interval = true;
+                switch (new_index_locations[0])
+                {
+
+                case LOCATION_OUTSIDE_BELOW:
+                    additional_interval.push_back(newInterval[0]);
+                    break;
+                case LOCATION_OUTSIDE_ABOVE:
+                    FinalInterval.push_back(intervals[i]);
+                    additional_interval.push_back(newInterval[0]);
+                    break;
+                case LOCATION_INSIDE:
+                    additional_interval.push_back(intervals[i][0]);
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            if (!open_interval)
+            {
+                FinalInterval.push_back(intervals[i]);
+            }
+
+            if (i == new_indices[1])
+            {
+                open_interval = false;
+                switch (new_index_locations[1])
+                {
+
+                case LOCATION_OUTSIDE_BELOW:
+                    additional_interval.push_back(newInterval[1]);
+                    FinalInterval.push_back(additional_interval);
+                    FinalInterval.push_back(intervals[i]);
+                    break;
+                case LOCATION_OUTSIDE_ABOVE:
+                    additional_interval.push_back(newInterval[1]);
+                    FinalInterval.push_back(additional_interval);
+                    break;
+                case LOCATION_INSIDE:
+                    additional_interval.push_back(intervals[i][1]);
+                    FinalInterval.push_back(additional_interval);
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
 
         return FinalInterval;
     }
@@ -114,12 +175,22 @@ int main(int argc, char const *argv[])
     Solution solution;
     vector<vector<int>> intervals = {
         {1, 2},
-        {4, 5},
+        {3, 5},
         {6, 7},
         {8, 10},
         {12, 16}};
-    vector<int> new_interval = {13, 14};
+    // vector<vector<int>> intervals;
+    // vector<vector<int>> intervals = {
+    //     {1, 5}};
+
+    vector<int> new_interval = {6, 8};
     vector<vector<int>> final_interval = solution.insert(intervals, new_interval);
+
+    printf("New Intervals:\n");
+    for (auto i = final_interval.begin(); i != final_interval.end(); i++)
+    {
+        printf("{%i,%i}\n", (*i)[0], (*i)[1]);
+    }
 
     return 0;
 }
