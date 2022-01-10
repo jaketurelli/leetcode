@@ -13,6 +13,10 @@
 
 using namespace std;
 
+// Completed 1/10/2022
+// Runtime: 14 ms, faster than 18.53% of C++ online submissions for Maximum Depth of Binary Tree.
+// Memory Usage: 18.8 MB, less than 89.41% of C++ online submissions for Maximum Depth of Binary Tree.
+
 // Definition for a binary tree node.
 struct TreeNode
 {
@@ -26,10 +30,21 @@ struct TreeNode
 
 class Solution
 {
+private:
+    int max(int a, int b)
+    {
+        if (b > a)
+            return b;
+        return a;
+    }
+
 public:
     int maxDepth(TreeNode *root)
     {
-        return 0;
+        if (root == nullptr)
+            return 0;
+
+        return 1 + max(maxDepth(root->left), maxDepth(root->right));
     }
 };
 
