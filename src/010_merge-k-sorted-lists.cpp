@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////
 /// @file 010_merge-k-sorted-lists.cpp
 /// @author Jake Turelli (jake.turelli@gmail.com)
-/// @brief
+/// @brief https://leetcode.com/problems/merge-k-sorted-lists/
 /// @version 0.1
 /// @date 2022-01-10
 ///
