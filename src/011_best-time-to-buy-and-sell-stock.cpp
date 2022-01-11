@@ -9,6 +9,11 @@
 ///
 ///////////////////////////////////////////////
 
+#include <vector>
+#include <cstdio>
+
+using namespace std;
+
 class Solution
 {
 public:
@@ -16,3 +21,18 @@ public:
     {
     }
 };
+
+bool tests(Solution &solution)
+{
+    return false;
+}
+
+int main(int argc, char const *argv[])
+{
+    Solution solution;
+    if (tests(solution))
+        printf("PASS!\n");
+    else
+        printf("FAIL!\n");
+    return 0;
+}
