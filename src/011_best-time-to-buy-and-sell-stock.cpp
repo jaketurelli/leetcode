@@ -15,8 +15,8 @@
 
 using namespace std;
 
-// Runtime: 266 ms, faster than 5.11% of C++ online submissions for Best Time to Buy and Sell Stock.
-// Memory Usage: 93.3 MB, less than 90.05% of C++ online submissions for Best Time to Buy and Sell Stock.
+// Runtime: 186 ms, faster than 22.10% of C++ online submissions for Best Time to Buy and Sell Stock.
+// Memory Usage: 93.3 MB, less than 52.70% of C++ online submissions for Best Time to Buy and Sell Stock.
 
 class Solution
 {
@@ -33,7 +33,7 @@ public:
     {
         int min = prices[0];
         int best_price = 0;
-        for (int i = 1; i < prices.size(); i++)
+        for (int i = 1; i < prices.size(); ++i)
         {
             if (prices[i] - min > best_price)
 
