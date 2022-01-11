@@ -28,8 +28,30 @@ public:
     ///////////////////////////////////////////////
     int coinChange(vector<int> &coins, int amount)
     {
-
-        return 0;
+        int cur_amount = amount;
+        int number_coins = 0;
+        while (cur_amount != 0)
+        {
+            int min_div = cur_amount + 1;
+            int remainder = 0;
+            bool no_solution = true;
+            for (vector<int>::iterator i = coins.begin(); i != coins.end(); ++i)
+            {
+                int div = cur_amount / *i;
+                int rem = cur_amount % *i;
+                if (div > 0 && div < min_div)
+                {
+                    no_solution = false;
+                    min_div = div;
+                    remainder = cur_amount % *i;
+                }
+            }
+            if (no_solution)
+                return -1;
+            number_coins += min_div;
+            cur_amount = remainder;
+        }
+        return number_coins;
     }
 };
 
@@ -57,6 +79,17 @@ bool tests(Solution &solution)
     int test3_amount = 0;
     assert(solution.coinChange(test3_coins, test3_amount) == 0);
 
+    // Test 4
+    // [ 1, 3, 5 ]
+    // 5
+    vector<int> test4_coins = {1, 3, 5};
+    int test4_amount = 5;
+    assert(solution.coinChange(test4_coins, test4_amount) == 1);
+
+    // Test 5
+    vector<int> test5_coins = {3, 5};
+    int test5_amount = 9;
+    assert(solution.coinChange(test5_coins, test5_amount) == 1);
     return true;
 }
 int main(int argc, char const *argv[])
