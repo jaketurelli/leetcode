@@ -13,6 +13,10 @@
 
 using namespace std;
 
+// Completed 1/10/2022
+// Runtime: 604 ms, faster than 8.07% of C++ online submissions for Merge k Sorted Lists.
+// Memory Usage: 13 MB, less than 94.92% of C++ online submissions for Merge k Sorted Lists.
+
 // Definition for singly-linked list.
 struct ListNode
 {
@@ -30,39 +34,58 @@ class Solution
 public:
     ListNode *mergeKLists(vector<ListNode *> &lists)
     {
-        ListNode *head = new ListNode();
-        ListNode *curr_node = head;
-        bool complete = false;
         int n_lists = lists.size();
+        if (n_lists == 0)
+            return nullptr;
+
+        ListNode *head = nullptr;
+        ListNode *curr_node = nullptr;
+        ListNode *prev_node = nullptr;
+        bool complete = false;
+        bool not_first_run = false;
 
         while (!complete)
         {
             complete = true;
             int next_val_index = 0;
-            int next_val = 0;
             int current_min = START_MIN;
             for (int i = 0; i < n_lists; ++i)
             {
-                ListNode *curr_list = lists[i];
-                if (curr_list != nullptr)
+                if (lists[i] != nullptr)
                 {
                     complete = false;
-                    if (curr_list->val <= current_min)
+                    if (lists[i]->val < current_min)
                     {
                         next_val_index = i;
-                        next_val = curr_list->val;
+                        current_min = lists[i]->val;
                     }
                 }
             }
 
-            // capture value
-            curr_node->val = next_val;
+            if (complete)
+                return head;
 
-            // todo: capture next node on previous?
+            curr_node = lists[next_val_index];
+            printf("adding %i from list %i\n", curr_node->val, next_val_index);
 
             // get next node for the one that was used
             lists[next_val_index] = lists[next_val_index]->next;
+
+            // todo: capture next node on previous?
+            if (not_first_run)
+            {
+                prev_node->next = curr_node;
+            }
+            else
+            {
+                head = curr_node;
+                not_first_run = true;
+            }
+
+            curr_node->next = nullptr;
+            prev_node = curr_node;
         }
+        return head;
     }
 };
 
@@ -97,12 +120,19 @@ bool tests(Solution &solution)
     int list1[3] = {1, 4, 5};
     ListNode *test1_node_1 = get_list(list1, 3);
     int list2[3] = {1, 3, 4};
-    ListNode *test1_node_2 = get_list(list1, 3);
+    ListNode *test1_node_2 = get_list(list2, 3);
     int list3[2] = {2, 6};
-    ListNode *test1_node_3 = get_list(list1, 2);
+    ListNode *test1_node_3 = get_list(list3, 2);
     vector<ListNode *> test1 = {test1_node_1, test1_node_2, test1_node_3};
 
-    solution.mergeKLists(test1);
+    ListNode *test1_solution = solution.mergeKLists(test1);
+    printf("printfing solution:\n");
+    while (test1_solution != nullptr)
+    {
+        printf("%i,", test1_solution->val);
+        test1_solution = test1_solution->next;
+    }
+    printf("\n");
 
     return true;
 }
