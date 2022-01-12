@@ -11,11 +11,18 @@
 #include <vector>
 #include <assert.h>
 #include <cstdio>
+#include <algorithm>
+#include <iostream>
 
 using namespace std;
 
 class Solution
 {
+private:
+    static constexpr int MIN_START = 10 * 10 * 10 * 10 + 1;
+    int m_min;
+    bool m_min_found;
+
 public:
     ///////////////////////////////////////////////
     /// @brief You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
@@ -28,30 +35,40 @@ public:
     ///////////////////////////////////////////////
     int coinChange(vector<int> &coins, int amount)
     {
-        int cur_amount = amount;
-        int number_coins = 0;
-        while (cur_amount != 0)
+        vector<int> sorted_coins = coins;
+        sort(sorted_coins.begin(), sorted_coins.end(), greater<int>());
+        m_min = MIN_START;
+        m_min_found = false;
+
+        increment_value(sorted_coins, amount, 0);
+        return m_min == MIN_START ? -1 : m_min;
+    }
+
+private:
+    int increment_value(vector<int> &coins, int current_amount, int number_coins)
+    {
+        if (current_amount == 0)
         {
-            int min_div = cur_amount + 1;
-            int remainder = 0;
-            bool no_solution = true;
-            for (vector<int>::iterator i = coins.begin(); i != coins.end(); ++i)
+            if (number_coins < m_min)
             {
-                int div = cur_amount / *i;
-                int rem = cur_amount % *i;
-                if (div > 0 && div < min_div)
-                {
-                    no_solution = false;
-                    min_div = div;
-                    remainder = cur_amount % *i;
-                }
+                m_min = number_coins;
+                m_min_found = true;
+                printf("min number coins: %i\n", number_coins);
             }
-            if (no_solution)
-                return -1;
-            number_coins += min_div;
-            cur_amount = remainder;
+            return number_coins;
         }
-        return number_coins;
+        if (current_amount < 0)
+            return -1;
+
+        for (auto i = coins.begin(); i != coins.end(); ++i)
+        {
+            int curr_number_coins = number_coins;
+            int curr_amount = current_amount;
+            increment_value(coins, current_amount - *i, ++curr_number_coins);
+            if (m_min_found)
+                return 0;
+        }
+        return 0;
     }
 };
 
@@ -89,7 +106,20 @@ bool tests(Solution &solution)
     // Test 5
     vector<int> test5_coins = {3, 5};
     int test5_amount = 9;
-    assert(solution.coinChange(test5_coins, test5_amount) == 1);
+    assert(solution.coinChange(test5_coins, test5_amount) == 3);
+
+    // TEst 6
+    vector<int> test6_coins = {1, 2, 5};
+    int test6_amount = 100;
+    printf("%i\n", solution.coinChange(test6_coins, test6_amount));
+    assert(solution.coinChange(test6_coins, test6_amount) == 20);
+
+    // TEst 7
+    vector<int> test7_coins = {186, 419, 83, 408};
+    int test7_amount = 6249;
+    printf("%i\n", solution.coinChange(test7_coins, test7_amount));
+    assert(solution.coinChange(test7_coins, test7_amount) == 20);
+
     return true;
 }
 int main(int argc, char const *argv[])
