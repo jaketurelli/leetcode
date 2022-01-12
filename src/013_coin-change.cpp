@@ -47,6 +47,9 @@ public:
 private:
     int increment_value(vector<int> &coins, int current_amount, int number_coins)
     {
+        if (current_amount < 0 || number_coins < 0)
+            return -1;
+
         if (current_amount == 0)
         {
             if (number_coins < m_min)
@@ -57,14 +60,13 @@ private:
             }
             return number_coins;
         }
-        if (current_amount < 0)
-            return -1;
 
         for (auto i = coins.begin(); i != coins.end(); ++i)
         {
-            int curr_number_coins = number_coins;
-            int curr_amount = current_amount;
-            increment_value(coins, current_amount - *i, ++curr_number_coins);
+            int curr_number_coins = number_coins - current_amount / *i;
+            int curr_amount = current_amount % *i;
+
+            increment_value(coins, curr_amount, curr_number_coins);
             if (m_min_found)
                 return 0;
         }
