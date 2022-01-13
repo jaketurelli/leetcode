@@ -9,7 +9,7 @@
 ///
 ///////////////////////////////////////////////
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <cstdio>
 
 using namespace std;
@@ -17,6 +17,11 @@ using namespace std;
 // completed: 1/5/2022
 // Runtime: 13 ms, faster than 8.06% of C++ online submissions for Clone Graph.
 // Memory Usage: 8.9 MB, less than 44.13% of C++ online submissions for Clone Graph.
+
+// Modified 1/12/2022
+// Runtime: 7 ms, faster than 61.98% of C++ online submissions for Clone Graph.
+// Memory Usage: 9.1 MB, less than 10.78% of C++ online submissions for Clone Graph.
+// 1.
 class Node
 {
 public:
@@ -42,7 +47,7 @@ public:
 class Solution
 {
 private:
-    map<int, Node *> m_added_nodes;
+    unordered_map<int, Node *> m_added_nodes;
 
 public:
     Node *cloneGraph(Node *node)
@@ -60,7 +65,7 @@ public:
         else
             return nullptr;
 
-        for (auto i = node->neighbors.begin(); i != node->neighbors.end(); i++)
+        for (auto i = node->neighbors.begin(); i != node->neighbors.end(); ++i)
         {
             if (m_added_nodes.count((*i)->val) == 0)
                 m_added_nodes[node->val]->neighbors.push_back(cloneGraph(*i));

@@ -9,7 +9,7 @@
 ///
 ///////////////////////////////////////////////
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <assert.h>
 
 using namespace std;
@@ -34,11 +34,11 @@ public:
 
         int current_count = 0;
         int max_count = 1;
-        map<int, int> current_letters;
+        unordered_map<int, int> current_letters;
 
         for (size_t i = 0; i < s.size();)
         {
-            current_count++;
+            ++current_count;
             if (current_letters[s[i]])
             {
                 // duplicate!
@@ -57,7 +57,7 @@ public:
             {
                 current_letters[s[i]] = i + 1;
             }
-            i++;
+            ++i;
         }
         if (current_count > max_count)
             max_count = current_count;

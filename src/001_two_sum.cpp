@@ -13,8 +13,14 @@
 // Runtime: 17 ms, faster than 48.33% of C++ online submissions for Two Sum.
 // Memory Usage: 11.2 MB, less than 22.64% of C++ online submissions for Two Sum.
 
+// Corrected for speed 1/12/2022:
+// Runtime: 12 ms, faster than 79.80% of C++ online submissions for Two Sum.
+// Memory Usage: 10.9 MB, less than 45.57% of C++ online submissions for Two Sum.
+// 1. unordered_map vs. map will speed things up
+// 2. cleaner approach
+
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <cstdio>
 using namespace std;
 
@@ -31,25 +37,16 @@ class Solution
 public:
     vector<int> twoSum(vector<int> &nums, int target)
     {
-        vector<int> indices;
-        map<int, int> compliment_map;
-        int index = 0;
-        for (auto i = nums.begin(); i != nums.end(); i++)
+        unordered_map<int, int> imap;
+        for (int i = 0;; ++i)
         {
-            int compliment = target - *i;
-            if (compliment_map.find(compliment) == compliment_map.end())
-            {
-                compliment_map[*i] = index;
-            }
-            else
-            {
-                indices.push_back(index);
-                indices.push_back(compliment_map[compliment]);
-                break;
-            }
-            index++;
+            auto it = imap.find(target - nums[i]);
+
+            if (it != imap.end())
+                return vector<int>{i, it->second};
+
+            imap[nums[i]] = i;
         }
-        return indices;
     }
 };
 
