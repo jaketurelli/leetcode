@@ -18,10 +18,6 @@ using namespace std;
 
 class Solution
 {
-private:
-    static constexpr int MIN_START = 10 * 10 * 10 * 10 + 1;
-    int m_min;
-    bool m_min_found;
 
 public:
     ///////////////////////////////////////////////
@@ -33,44 +29,21 @@ public:
     /// @param amount
     /// @return int
     ///////////////////////////////////////////////
+
     int coinChange(vector<int> &coins, int amount)
     {
-        vector<int> sorted_coins = coins;
-        sort(sorted_coins.begin(), sorted_coins.end(), greater<int>());
-        m_min = MIN_START;
-        m_min_found = false;
 
-        increment_value(sorted_coins, amount, 0);
-        return m_min == MIN_START ? -1 : m_min;
-    }
-
-private:
-    int increment_value(vector<int> &coins, int current_amount, int number_coins)
-    {
-        if (current_amount < 0 || number_coins < 0)
-            return -1;
-
-        if (current_amount == 0)
+        //todo: study this approach more.
+        vector<int> A(amount + 1, amount + 1);
+        A[0] = 0;
+        for (int coin : coins)
         {
-            if (number_coins < m_min)
+            for (int i = coin; i <= amount; ++i)
             {
-                m_min = number_coins;
-                m_min_found = true;
-                printf("min number coins: %i\n", number_coins);
+                A[i] = min(A[i], A[i - coin] + 1);
             }
-            return number_coins;
         }
-
-        for (auto i = coins.begin(); i != coins.end(); ++i)
-        {
-            int curr_number_coins = number_coins - current_amount / *i;
-            int curr_amount = current_amount % *i;
-
-            increment_value(coins, curr_amount, curr_number_coins);
-            if (m_min_found)
-                return 0;
-        }
-        return 0;
+        return A[amount] > amount ? -1 : A[amount];
     }
 };
 
