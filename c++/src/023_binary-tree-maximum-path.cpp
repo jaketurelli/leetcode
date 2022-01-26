@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////
-/// @file 024_binary-tree-maximum-path.cpp
+/// @file 023_binary-tree-maximum-path.cpp
 /// @author Jake Turelli (jake.turelli@gmail.com)
 /// @brief https://leetcode.com/problems/binary-tree-maximum-path-sum/
 /// @version 0.1
