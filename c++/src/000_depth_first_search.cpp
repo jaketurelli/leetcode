@@ -9,6 +9,7 @@
 ///
 ///////////////////////////////////////////////
 #include <cstdio>
+#include <stack>
 using namespace std;
 
 struct Node
@@ -27,6 +28,7 @@ struct Node
                                                 right(_right) {}
 };
 
+// Recursive
 void DFS_pre_order(Node *root)
 {
     if (root == nullptr)
@@ -54,6 +56,82 @@ void DFS_in_order(Node *root)
     DFS_in_order(root->right);
 }
 
+// Iterative
+void DFS_pre_order_iterative(Node *root)
+{
+    stack<Node *> st;
+    Node *curr_node = root;
+    while (curr_node != nullptr || !st.empty())
+    {
+        // while current node is not null and the stack is not empty,
+        // follow left nodes down until you hit a leaf,
+        // adding the right nodes to the stack along the way.
+        while (curr_node != nullptr)
+        {
+            printf("%i ", curr_node->val);
+            if (curr_node->right != nullptr)
+                st.push(curr_node->right);
+
+            curr_node = curr_node->left;
+        }
+
+        // leaf has been found, if a node exists on the stack,
+        // that becomes the current node
+        if (!st.empty())
+        {
+            curr_node = st.top();
+            st.pop();
+        }
+    }
+}
+void DFS_post_order_iterative(Node *root)
+{
+    stack<Node *> st1, st2;
+    Node *curr_node = root;
+    st1.push(root);
+    while (!st1.empty())
+    {
+        curr_node = st1.top();
+        st1.pop();
+        st2.push(curr_node);
+
+        if (curr_node->left != nullptr)
+            st1.push(curr_node->left);
+        if (curr_node->right != nullptr)
+            st1.push(curr_node->right);
+    }
+
+    while (!st2.empty())
+    {
+        printf("%i ", st2.top()->val);
+        st2.pop();
+    }
+}
+void DFS_in_order_iterative(Node *root)
+{
+    stack<Node *> st;
+    Node *curr_node = root;
+    while (curr_node != nullptr || !st.empty())
+    {
+        // iterate through all lefts, adding the node to the stack
+        // the first time you visit it.
+        while (curr_node != nullptr)
+        {
+            st.push(curr_node);
+            curr_node = curr_node->left;
+        }
+
+        // leaf has been reached
+        // pop off the stack and handle it
+        curr_node = st.top();
+        st.pop();
+        printf("%i ", curr_node->val);
+
+        // current node is now the current node's right
+        curr_node = curr_node->right;
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     Node n8 = Node(8);
@@ -74,16 +152,28 @@ int main(int argc, char const *argv[])
     //             \           /
     //              7         8
 
-    printf("DFS pre order:\n");
+    printf("DFS pre order (recursive):\n");
     DFS_pre_order(&n0);
     printf("\n");
 
-    printf("DFS post order:\n");
+    printf("DFS pre order (iterative):\n");
+    DFS_pre_order_iterative(&n0);
+    printf("\n");
+
+    printf("DFS post order (recursive):\n");
     DFS_post_order(&n0);
     printf("\n");
 
-    printf("DFS in order:\n");
+    printf("DFS post order (iterative):\n");
+    DFS_post_order_iterative(&n0);
+    printf("\n");
+
+    printf("DFS in order (recursive):\n");
     DFS_in_order(&n0);
+    printf("\n");
+
+    printf("DFS in order (iterative):\n");
+    DFS_in_order_iterative(&n0);
     printf("\n");
 
     return 0;
